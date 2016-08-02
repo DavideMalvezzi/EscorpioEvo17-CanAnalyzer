@@ -1,0 +1,20 @@
+.row{
+  background-color: #1d1d1d;
+  border-radius: 10px;
+  margin: 8px 0px 8px 0px;
+}
+
+.col-xs-12{
+  padding: 8px;
+}
+
+/*
+.btn, .form-control{
+  margin-left: 4px;
+  margin-right: 4px;
+}
+*/
+
+body{
+  background-color: #373737;
+}
