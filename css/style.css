@@ -1,20 +1,39 @@
-.row{
-  background-color: #1d1d1d;
-  border-radius: 10px;
-  margin: 8px 0px 8px 0px;
-}
-
-.col-xs-12{
-  padding: 8px;
-}
-
-/*
-.btn, .form-control{
-  margin-left: 4px;
-  margin-right: 4px;
-}
-*/
-
 body{
   background-color: #373737;
+}
+
+th{
+  color: white;
+  text-align: center;
+}
+
+td{
+  text-align: center;
+}
+
+.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+    border: none;
+}
+
+.col{
+  margin: 0px;
+  padding: 0px;
+}
+
+#menu-header{
+  color: white;
+  background-color: #1d1d1d;
+  text-align: center;
+  padding: 8px 0px 4px 0px;
+  margin: 8px 0px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
+}
+
+#menu-items{
+  background-color: #1d1d1d;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0px 0px 8px 0px;
+  margin: 0px 0px 8px 0px;
+  border-radius: 0px 0px 10px 10px;
 }
