@@ -1,6 +1,7 @@
 
 var serialPort = new SerialPort;
 var isPaused = false;
+var isAlwaysDown = false;
 
 function reloadPort(){
   getDevicesList(
@@ -70,10 +71,20 @@ function pause(){
   isPaused = !isPaused;
 }
 
+function toggleAlwaysDown(){
+  isAlwaysDown = !isAlwaysDown;
+  $("#down-btn").toggleClass("active");
+}
+
 function onNewSerialData(data){
   if(!isPaused){
     var dv = new DataView(data);
   }
+}
+
+
+function clearTables(){
+  $("#rx-table").empty();
 }
 
 function showSettingsModal(){
@@ -95,4 +106,18 @@ function saveSettings(){
   setCookie("can.port.databits", $("#serial-port-databits").val());
   setCookie("can.port.stopbit", $("#serial-port-stopbit").val());
   setCookie("can.port.paritybit", $("#serial-port-paritybit").val());
+}
+
+function showFilterModal(){
+
+  $("#filter-modal").modal();
+
+}
+
+function onFilterSelected(){
+
+}
+
+function applyFilter(){
+  
 }

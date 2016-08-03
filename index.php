@@ -59,12 +59,12 @@
               Serial Port
             </div>
 
-            <div class="col-xs-3 col-md-1 col">
-              Modes
-            </div>
-
             <div class="col-xs-3 col-md-2 col">
               Actions
+            </div>
+
+            <div class="col-xs-3 col-md-1 col">
+              Modes
             </div>
 
             <div class="col-xs-2 col-md-1 col">
@@ -73,7 +73,7 @@
           </div>
         <div id="menu-items" class="row form-inline">
             <div class="col-xs-4 col-md-4 col">
-              <select id="port-combo" class="form-control">
+              <select id="port-combo" class="form-control" style="min-width: 150px;">
               </select>
 
               <button type="button" id="refresh-btn" class="btn btn-primary" onclick="reloadPort()">
@@ -95,6 +95,22 @@
               </div>
             </div>
 
+            <div class="col-xs-3 col-md-2 col">
+              <div class="btn-group">
+                <button type="button" id="down-btn" class="btn btn-primary" onclick="toggleAlwaysDown()">
+                  <span class="glyphicon glyphicon-arrow-down"></span>
+                </button>
+
+                <button type="button" id="filter-btn" class="btn btn-primary" onclick="showFilterModal()">
+                  <span class="glyphicon glyphicon-filter"></span>
+                </button>
+
+                <button type="button" id="remove-btn" class="btn btn-primary" onclick="clearTables()">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </div>
+            </div>
+
             <div class="col-xs-3 col-md-1 col">
               <div class="btn-group" role="group" aria-label="Mode">
                 <button type="button" id="rx-btn" class="btn btn-primary">
@@ -103,22 +119,6 @@
 
                 <button type="button" id="tx-btn" class="btn btn-primary">
                   <span class="glyphicon glyphicon-upload"></span>
-                </button>
-              </div>
-            </div>
-
-            <div class="col-xs-3 col-md-2 col">
-              <div class="btn-group">
-                <button type="button" id="remove-btn" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-arrow-down"></span>
-                </button>
-
-                <button type="button" id="filter-btn" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-filter"></span>
-                </button>
-
-                <button type="button" id="remove-btn" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-remove"></span>
                 </button>
               </div>
             </div>
@@ -162,7 +162,7 @@
                 </tr>
               </thead>
 
-              <tbody>
+              <tbody id="rx-table">
 
               </tbody>
             </table>
@@ -216,8 +216,74 @@
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveSettings()">Save</button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" onclick="saveSettings()">Save</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Apply filter</h4>
+            </div>
+
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-xs-12">
+                  <label for="filter-none" class="radio-inline">
+                    <input type="radio" id="filter-none" name="filter-type" onclick="onFilterSelected('none')">None
+                  </label>
+
+                  <label for="filter-range" class="radio-inline">
+                    <input type="radio" id="filter-range" name="filter-type" onclick="onFilterSelected('range')">Range
+                  </label>
+
+                  <label for="filter-list" class="radio-inline">
+                    <input type="radio" id="filter-list" name="filter-type" onclick="onFilterSelected('list')">List
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="row" style="padding: 8px 16px 8px 16px;">
+              <div class="col-xs-6">
+                <label for="min-channel-list">Min:</label>
+                <select id="min-channel-list" class="form-control" style="min-width: 150px">
+                </select>
+
+                <label for="max-channel-list">Max:</label>
+                <select id="max-channel-list" class="form-control" style="min-width: 150px">
+                </select>
+              </div>
+
+              <div class="col-xs-6">
+                <form class="form-inline" role="form">
+                  <select id="channel-list" class="form-control" style="min-width: 150px">
+                  </select>
+
+                  <div class="btn-group btn-group-sm pull-right">
+                    <button type="button" id="add-channel" class="btn btn-default" >
+                      <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+
+                    <button type="button" id="remove-channel" class="btn btn-default" >
+                      <span class="glyphicon glyphicon-minus"></span>
+                    </button>
+                  </div>
+                </form>
+
+                <select multiple class="form-control" id="selected-channel-list">
+               </select>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" onclick="applyFilter()">Apply</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>
