@@ -108,16 +108,61 @@ function saveSettings(){
   setCookie("can.port.paritybit", $("#serial-port-paritybit").val());
 }
 
+var currentFilterType = "none";
+
 function showFilterModal(){
+  $("#filter-" + currentFilterType).attr("checked", true);
+  onFilterSelected(currentFilterType);
 
   $("#filter-modal").modal();
-
 }
 
-function onFilterSelected(){
+function onFilterSelected(filter){
+  currentFilterType = filter;
+  if(currentFilterType === "none"){
+    setEnabled("#min-channel-list", false);
+    setEnabled("#max-channel-list", false);
+    setEnabled("#channel-list", false);
+    setEnabled("#add-channel", false);
+    setEnabled("#remove-channel", false);
+    setEnabled("#selected-channel-list", false);
+  }
+  else if(currentFilterType === "range"){
+    setEnabled("#min-channel-list", true);
+    setEnabled("#max-channel-list", true);
+    setEnabled("#channel-list", false);
+    setEnabled("#add-channel", false);
+    setEnabled("#remove-channel", false);
+    setEnabled("#selected-channel-list", false);
+  }
+  else if(currentFilterType === "list"){
+    setEnabled("#min-channel-list", false);
+    setEnabled("#max-channel-list", false);
+    setEnabled("#channel-list", true);
+    setEnabled("#add-channel", true);
+    setEnabled("#remove-channel", true);
+    setEnabled("#selected-channel-list", true);
+  }
+}
 
+function checkFilter(id){
+  if(currentFilterType === "none"){
+    return true;
+  }
+  else if(currentFilterType === "range"){
+    var min = $("min-channel-list").val();
+    var max = $("min-channel-list").val();
+    if(id >= min && id <= max){
+      return true;
+    }
+    return false;
+  }
+  else if(currentFilterType === "list"){
+    
+  }
 }
 
 function applyFilter(){
-  
+  $("#rx-table").empty();
+
 }

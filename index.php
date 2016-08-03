@@ -21,6 +21,14 @@
   </head>
 
   <body>
+    <?php
+      require('db_access.php');
+      connectToDb();
+
+      $sql = "SELECT can_id, name, size, type FROM channel";
+      $result = $conn->query($sql);
+    ?>
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -51,6 +59,8 @@
         }
       );
     </script>
+
+
 
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: transparent; border:none; top:0px;">
       <div class="container-fluid">
@@ -253,16 +263,34 @@
               <div class="col-xs-6">
                 <label for="min-channel-list">Min:</label>
                 <select id="min-channel-list" class="form-control" style="min-width: 150px">
+                  <?php
+                    $result->data_seek(0);
+                    while($row = $result->fetch_assoc()){
+                      echo'<option value="' . $row["can_id"] . '>' . $row["can_id"] . " " . $row["name"] . "</option>";
+                    }
+                  ?>
                 </select>
 
                 <label for="max-channel-list">Max:</label>
                 <select id="max-channel-list" class="form-control" style="min-width: 150px">
+                  <?php
+                    $result->data_seek(0);
+                    while($row = $result->fetch_assoc()){
+                      echo'<option value="' . $row["can_id"] . '>' . $row["can_id"] . " " . $row["name"] . "</option>";
+                    }
+                  ?>
                 </select>
               </div>
 
               <div class="col-xs-6">
                 <form class="form-inline" role="form">
-                  <select id="channel-list" class="form-control" style="min-width: 150px">
+                  <select id="channel-list" class="form-control" style="min-width: 150px; max-width: 200px;">
+                    <?php
+                      $result->data_seek(0);
+                      while($row = $result->fetch_assoc()){
+                        echo'<option value="' . $row["can_id"] . '>' . $row["can_id"] . " " . $row["name"] . "</option>";
+                      }
+                    ?>
                   </select>
 
                   <div class="btn-group btn-group-sm pull-right">
@@ -291,5 +319,8 @@
 
     </div>
 
+    <?php
+      disconnectFromDb();
+    ?>
   </body>
 </html>
