@@ -2,17 +2,28 @@ body{
   background-color: #373737;
 }
 
-th{
+table{
   color: white;
+}
+
+table thead th{
   text-align: center;
 }
 
-td{
+table tr td{
   text-align: center;
 }
 
-.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
-    border: none;
+table tbody tr:nth-child(even) td, thead{
+  background-color: #373737;
+}
+
+table tbody tr:nth-child(odd) td{
+  background-color: #424242;
+}
+
+table tbody tr:hover td{
+  background-color: #606060;
 }
 
 .col{
@@ -36,4 +47,12 @@ td{
   padding: 0px 0px 8px 0px;
   margin: 0px 0px 8px 0px;
   border-radius: 0px 0px 10px 10px;
+}
+
+#table-container{
+  background-color: #1d1d1d;
+  border-radius: 10px;
+  margin: 8px 0px 8px 0px;
+  padding: 8px;
+  padding-top: 80px;
 }

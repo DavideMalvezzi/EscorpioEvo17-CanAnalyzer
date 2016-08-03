@@ -1,5 +1,6 @@
 
 var serialPort = new SerialPort;
+var isPaused = false;
 
 function reloadPort(){
   getDevicesList(
@@ -41,6 +42,7 @@ function openPort(){
         setEnabled("#open-btn", false);
         setEnabled("#pause-btn", true);
         setEnabled("#close-btn", true);
+        serialPort.setOnDataReceivedCallback(onNewSerialData);
       }
       else{
         showAlert("#error-alert", response.error);
@@ -62,6 +64,16 @@ function closePort(){
       }
     }
   );
+}
+
+function pause(){
+  isPaused = !isPaused;
+}
+
+function onNewSerialData(data){
+  if(!isPaused){
+    var dv = new DataView(data);
+  }
 }
 
 function showSettingsModal(){

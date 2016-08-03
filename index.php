@@ -52,85 +52,87 @@
       );
     </script>
 
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: transparent; border:none; top:0px;">
+      <div class="container-fluid">
+        <div id="menu-header" class="row form-inline">
+            <div class="col-xs-4 col-md-4 col">
+              Serial Port
+            </div>
+
+            <div class="col-xs-3 col-md-1 col">
+              Modes
+            </div>
+
+            <div class="col-xs-3 col-md-2 col">
+              Actions
+            </div>
+
+            <div class="col-xs-2 col-md-1 col">
+              Settings
+            </div>
+          </div>
+        <div id="menu-items" class="row form-inline">
+            <div class="col-xs-4 col-md-4 col">
+              <select id="port-combo" class="form-control">
+              </select>
+
+              <button type="button" id="refresh-btn" class="btn btn-primary" onclick="reloadPort()">
+                <span class="glyphicon glyphicon-refresh"></span>
+              </button>
+
+              <div class="btn-group">
+                <button type="button" id="open-btn" class="btn btn-primary disabled" onclick="openPort()" disabled>
+                  <span class="glyphicon glyphicon-play"></span>
+                </button>
+
+                <button type="button" id="pause-btn" class="btn btn-primary" onclick="pause()" disabled>
+                  <span class="glyphicon glyphicon-pause"></span>
+                </button>
+
+                <button type="button" id="close-btn" class="btn btn-primary disabled" onclick="closePort()" disabled>
+                  <span class="glyphicon glyphicon-stop"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="col-xs-3 col-md-1 col">
+              <div class="btn-group" role="group" aria-label="Mode">
+                <button type="button" id="rx-btn" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-download"></span>
+                </button>
+
+                <button type="button" id="tx-btn" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-upload"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="col-xs-3 col-md-2 col">
+              <div class="btn-group">
+                <button type="button" id="remove-btn" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-arrow-down"></span>
+                </button>
+
+                <button type="button" id="filter-btn" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-filter"></span>
+                </button>
+
+                <button type="button" id="remove-btn" class="btn btn-primary">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="col-xs-2 col-md-1 col">
+              <button type="button" id="settings-btn" class="btn btn-primary" onclick="showSettingsModal()">
+                <span class="glyphicon glyphicon-cog"></span>
+              </button>
+            </div>
+          </div>
+      </div>
+    </nav>
+
     <div class="container-fluid">
-
-      <div id="menu-header" class="row form-inline">
-        <div class="col-xs-4 col-md-4 col">
-          Serial Port
-        </div>
-
-        <div class="col-xs-3 col-md-1 col">
-          Modes
-        </div>
-
-        <div class="col-xs-3 col-md-2 col">
-          Actions
-        </div>
-
-        <div class="col-xs-2 col-md-1 col">
-          Settings
-        </div>
-      </div>
-
-      <div id="menu-items" class="row form-inline">
-        <div class="col-xs-4 col-md-4 col">
-          <select id="port-combo" class="form-control">
-          </select>
-
-          <button type="button" id="refresh-btn" class="btn btn-default" onclick="reloadPort()">
-            <span class="glyphicon glyphicon-refresh"></span>
-          </button>
-
-          <div class="btn-group">
-            <button type="button" id="open-btn" class="btn btn-default disabled" onclick="openPort()" disabled>
-              <span class="glyphicon glyphicon-play"></span>
-            </button>
-
-            <button type="button" id="pause-btn" class="btn btn-default" disabled>
-              <span class="glyphicon glyphicon-pause"></span>
-            </button>
-
-            <button type="button" id="close-btn" class="btn btn-default disabled" onclick="closePort()" disabled>
-              <span class="glyphicon glyphicon-stop"></span>
-            </button>
-          </div>
-        </div>
-
-        <div class="col-xs-3 col-md-1 col">
-          <div class="btn-group" role="group" aria-label="Mode">
-            <button type="button" id="rx-btn" class="btn btn-default">
-              <span class="glyphicon glyphicon-download"></span>
-            </button>
-
-            <button type="button" id="tx-btn" class="btn btn-default">
-              <span class="glyphicon glyphicon-upload"></span>
-            </button>
-          </div>
-        </div>
-
-        <div class="col-xs-3 col-md-2 col">
-          <div class="btn-group">
-            <button type="button" id="remove-btn" class="btn btn-default">
-              <span class="glyphicon glyphicon-arrow-down"></span>
-            </button>
-
-            <button type="button" id="filter-btn" class="btn btn-default">
-              <span class="glyphicon glyphicon-filter"></span>
-            </button>
-
-            <button type="button" id="remove-btn" class="btn btn-default">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button>
-          </div>
-        </div>
-
-        <div class="col-xs-2 col-md-1 col">
-          <button type="button" id="settings-btn" class="btn btn-default" onclick="showSettingsModal()">
-            <span class="glyphicon glyphicon-cog"></span>
-          </button>
-        </div>
-      </div>
-
       <div id="success-alert" class="alert alert-success hide fade in">
         <span id="success-alert-text"></span>
         <a href="#" class="close" aria-label="close" onClick="hideAlert('#succes-alert')">&times;</a>
@@ -141,10 +143,31 @@
         <a href="#" class="close" aria-label="close" onClick="hideAlert('#error-alert')">&times;</a>
       </div>
 
-      <div class="row table-responsive">
-        <table class="table">
+      <div id="table-container" class="row">
+        <div class="col-xs-12">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>CAN ID</th>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <?php
+                    for($i = 0; $i < 8; $i++){
+                      echo '<th>D' . $i . '</th>';
+                    }
+                  ?>
+                  <th>Value</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
 
-        </table>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
@@ -193,8 +216,8 @@
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal" onclick="saveSettings()">Save</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveSettings()">Save</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>
