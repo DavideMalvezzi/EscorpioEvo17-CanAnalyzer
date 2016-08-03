@@ -26,7 +26,9 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-    <!-- Include custom bootstrap functions utils-->
+    <!-- W3C cookies functions -->
+    <script src="js/cookies.js"></script>
+    <!-- Include custom bootstrap functions utils -->
     <script src="js/bootstrap_utils.js"></script>
     <!-- Include serial port functions -->
     <script src="js/serial_port.js"></script>
@@ -53,7 +55,7 @@
     <div class="container-fluid">
 
       <div id="menu-header" class="row form-inline">
-        <div class="col-xs-4 col-md-3 col">
+        <div class="col-xs-4 col-md-4 col">
           Serial Port
         </div>
 
@@ -71,7 +73,7 @@
       </div>
 
       <div id="menu-items" class="row form-inline">
-        <div class="col-xs-4 col-md-3 col">
+        <div class="col-xs-4 col-md-4 col">
           <select id="port-combo" class="form-control">
           </select>
 
@@ -80,15 +82,15 @@
           </button>
 
           <div class="btn-group">
-            <button type="button" id="open-btn" class="btn btn-default disabled">
+            <button type="button" id="open-btn" class="btn btn-default disabled" onclick="openPort()" disabled>
               <span class="glyphicon glyphicon-play"></span>
             </button>
 
-            <button type="button" id="pause-btn" class="btn btn-default hide">
+            <button type="button" id="pause-btn" class="btn btn-default" disabled>
               <span class="glyphicon glyphicon-pause"></span>
             </button>
 
-            <button type="button" id="stop-btn" class="btn btn-default disabled">
+            <button type="button" id="close-btn" class="btn btn-default disabled" onclick="closePort()" disabled>
               <span class="glyphicon glyphicon-stop"></span>
             </button>
           </div>
@@ -123,18 +125,18 @@
         </div>
 
         <div class="col-xs-2 col-md-1 col">
-          <button type="button" id="settings-btn" class="btn btn-default" onclick="$('#settings-modal').modal()">
+          <button type="button" id="settings-btn" class="btn btn-default" onclick="showSettingsModal()">
             <span class="glyphicon glyphicon-cog"></span>
           </button>
         </div>
       </div>
 
-      <div id="success-alert" class="alert alert-success hidden fade in">
+      <div id="success-alert" class="alert alert-success hide fade in">
         <span id="success-alert-text"></span>
         <a href="#" class="close" aria-label="close" onClick="hideAlert('#succes-alert')">&times;</a>
       </div>
 
-      <div id="error-alert" class="alert alert-danger hidden fade in">
+      <div id="error-alert" class="alert alert-danger hide fade in">
         <span id="error-alert-text"></span>
         <a href="#" class="close" aria-label="close" onClick="hideAlert('#error-alert')">&times;</a>
       </div>
@@ -159,13 +161,13 @@
                   <option value="4800">4800</option>
                   <option value="9600">9600</option>
                   <option value="19200">19200</option>
-                  <option value="9600">115200</option>
+                  <option value="115200">115200</option>
                 </select>
               </div>
 
               <div class="form-group">
-                <label for="serial-port-databit">DataBits:</label>
-                <select id="serial-port-databit" class="form-control">
+                <label for="serial-port-databits">DataBits:</label>
+                <select id="serial-port-databits" class="form-control">
                   <option value="seven">7</option>
                   <option value="eight">8</option>
                 </select>
@@ -191,7 +193,7 @@
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Save</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" onclick="saveSettings()">Save</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
           </div>

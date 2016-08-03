@@ -9,6 +9,8 @@ function setError(id, hasError){
 }
 
 function setEnabled(id, enable){
+  $(id).attr('disabled', !enable);
+
   if(enable){
     $(id).removeClass('disabled');
   }
@@ -19,10 +21,10 @@ function setEnabled(id, enable){
 
 function setVisible(id, visible){
   if(visible){
-    $(id).removeClass('hidden');
+    $(id).removeClass('hide');
   }
   else{
-    $(id).addClass('hidden');
+    $(id).addClass('hide');
   }
 }
 
