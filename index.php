@@ -25,7 +25,7 @@
       require('db_access.php');
       connectToDb();
 
-      $sql = "SELECT can_id, name, size, type FROM channel";
+      $sql = "SELECT can_id, name, size, type, formula FROM channel ORDER BY can_id ASC";
       $result = $conn->query($sql);
     ?>
 
@@ -237,7 +237,6 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
               <h4 class="modal-title">Apply filter</h4>
             </div>
 
@@ -266,7 +265,7 @@
                   <?php
                     $result->data_seek(0);
                     while($row = $result->fetch_assoc()){
-                      echo'<option value="' . $row["can_id"] . '>' . $row["can_id"] . " " . $row["name"] . "</option>";
+                      echo'<option value="' . $row["can_id"] . '">' . $row["can_id"] . " " . $row["name"] . "</option>";
                     }
                   ?>
                 </select>
@@ -276,7 +275,7 @@
                   <?php
                     $result->data_seek(0);
                     while($row = $result->fetch_assoc()){
-                      echo'<option value="' . $row["can_id"] . '>' . $row["can_id"] . " " . $row["name"] . "</option>";
+                      echo'<option value="' . $row["can_id"] . '">' . $row["can_id"] . " " . $row["name"] . "</option>";
                     }
                   ?>
                 </select>
@@ -288,17 +287,17 @@
                     <?php
                       $result->data_seek(0);
                       while($row = $result->fetch_assoc()){
-                        echo'<option value="' . $row["can_id"] . '>' . $row["can_id"] . " " . $row["name"] . "</option>";
+                        echo'<option value="' . $row["can_id"] . '">' . $row["can_id"] . " " . $row["name"] . "</option>";
                       }
                     ?>
                   </select>
 
                   <div class="btn-group btn-group-sm pull-right">
-                    <button type="button" id="add-channel" class="btn btn-default" >
+                    <button type="button" id="add-channel" class="btn btn-default" onclick="addToSelectedChannels()">
                       <span class="glyphicon glyphicon-plus"></span>
                     </button>
 
-                    <button type="button" id="remove-channel" class="btn btn-default" >
+                    <button type="button" id="remove-channel" class="btn btn-default" onclick="removeFromSelectedChannels()">
                       <span class="glyphicon glyphicon-minus"></span>
                     </button>
                   </div>
@@ -311,7 +310,6 @@
 
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal" onclick="applyFilter()">Apply</button>
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>

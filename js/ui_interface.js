@@ -82,11 +82,6 @@ function onNewSerialData(data){
   }
 }
 
-
-function clearTables(){
-  $("#rx-table").empty();
-}
-
 function showSettingsModal(){
   var bitrate = checkCookie("can.port.bitrate") ? getCookie("can.port.bitrate") : "9600";
   var databits = checkCookie("can.port.databits") ? getCookie("can.port.databits") : "eight";
@@ -109,12 +104,53 @@ function saveSettings(){
 }
 
 var currentFilterType = "none";
+var minFilter;
+var maxFilter;
+var listFilter = [];
+
+var chronoPacketsList = [];
+var uniquePacketsList = [];
+
+function addPacket(packet){
+  if(checkFilter(packet.id)){
+    uniquePacketsList[packet.id] = packet;
+    chronoPacketsList.push(packet);
+    if(chronoPacketsList.length > 1000){
+      chronoPacketsList.splice(0, 100);
+    }
+  }
+}
+
+function clearTables(){
+  chronoPacketsList.splice(0, chronoPacketsList.length);
+  uniquePacketsList.splice(0, uniquePacketsList.length);
+  $("#rx-table").empty();
+}
 
 function showFilterModal(){
   $("#filter-" + currentFilterType).attr("checked", true);
   onFilterSelected(currentFilterType);
 
   $("#filter-modal").modal();
+}
+
+function addToSelectedChannels(){
+  var idToAdd = $("#channel-list").val();
+  if(listFilter.indexOf(idToAdd) == -1){
+    listFilter.push(idToAdd);
+    $("#selected-channel-list").append('<option value="' + idToAdd + '">' + $("#channel-list option:selected").text() + '</option>');
+  }
+}
+
+function removeFromSelectedChannels(){
+  var index;
+  $('#selected-channel-list :selected').each(
+    function(i, selected){
+      index = listFilter.indexOf($(selected).val());
+      listFilter.splice(index, 1);
+      $(selected).remove();
+    }
+  );
 }
 
 function onFilterSelected(filter){
@@ -134,6 +170,9 @@ function onFilterSelected(filter){
     setEnabled("#add-channel", false);
     setEnabled("#remove-channel", false);
     setEnabled("#selected-channel-list", false);
+
+    minFilter = $("min-channel-list").val();
+    maxFilter = $("max-channel-list").val();
   }
   else if(currentFilterType === "list"){
     setEnabled("#min-channel-list", false);
@@ -150,16 +189,16 @@ function checkFilter(id){
     return true;
   }
   else if(currentFilterType === "range"){
-    var min = $("min-channel-list").val();
-    var max = $("min-channel-list").val();
-    if(id >= min && id <= max){
+    if(id >= minFilter && id <= maxFilter){
       return true;
     }
-    return false;
   }
   else if(currentFilterType === "list"){
-    
+    if(listFilter.indexOf(id) != -1){
+      return true;
+    }
   }
+  return false;
 }
 
 function applyFilter(){
