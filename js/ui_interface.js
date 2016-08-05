@@ -1,4 +1,10 @@
 
+var channels = [];
+
+var PACKET_HEADER = "CAD";
+var BUFFER_SIZE = 4096;
+var buffer;
+
 var serialPort = new SerialPort;
 var isPaused = false;
 var isAlwaysDown = false;
@@ -40,6 +46,7 @@ function openPort(){
     },
     function(response){
       if(response.result === "ok"){
+        buffer = new CircularBuffer(BUFFER_SIZE);
         setEnabled("#open-btn", false);
         setEnabled("#pause-btn", true);
         setEnabled("#close-btn", true);
@@ -79,7 +86,72 @@ function toggleAlwaysDown(){
 function onNewSerialData(data){
   if(!isPaused){
     var dv = new DataView(data);
+
+    for(var i = 0; i < dv.byteLength; i++){
+      buffer.pushByte(dv.getUint8(i));
+    }
+
+    while(parsePackets());
   }
+}
+
+function parsePackets(){
+  var header = buffer.indexOfString(PACKET_HEADER);
+
+  if(header != -1){
+    //Check if can id and size have been read
+    if(buffer.getLength() > PACKET_HEADER.length + 3){
+      header += PACKET_HEADER.length;
+      var id = buffer.getUint16FromStart(header);
+      var size = buffer.getByteFromStart(header + 2);
+      header += 3;
+
+      if(size <= 0 || size > 8){
+        buffer.pop(header);
+        return 1;
+      }
+
+      if(buffer.getLength() > PACKET_HEADER.length + 3 + size){
+        var data = [];
+        for(var i = 0; i < size; i++){
+          data.push(buffer.getByteFromStart(header + i));
+        }
+
+        conversionResponse = getPacketValue(id, data);
+
+        addPacket({id: id, size: size, data: data, value: conversionResponse.value, notes: conversionResponse.notes});
+
+        buffer.pop(header + size);
+
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+function getPacketValue(id, data){
+  if(id in channels){
+    var dv = new DataView(new ArrayBuffer(data.length));
+    for(var i = 0; i < data.length; i++){
+      dv.setUint8(i, data[i]);
+    }
+
+    switch(channels[id].type){
+      case 'B':
+        return parseBitFlag(dv, 0, data.length);
+      case 'U':
+        return parseUInt(dv, 0, data.length);
+      case 'I':
+        return parseSInt(dv, 0, data.length);
+      case 'D':
+        return parseDecimal(dv, 0, data.length);
+      case 'S':
+        return parseString(dv, 0, data.length);
+    }
+  }
+
+  return {value:"", notes:"Unknown channel"};
 }
 
 function showSettingsModal(){
@@ -108,15 +180,33 @@ var minFilter;
 var maxFilter;
 var listFilter = [];
 
+var rxType = "chrono";
 var chronoPacketsList = [];
 var uniquePacketsList = [];
 
 function addPacket(packet){
+  console.log(packet);
+
   if(checkFilter(packet.id)){
+
     uniquePacketsList[packet.id] = packet;
     chronoPacketsList.push(packet);
+
     if(chronoPacketsList.length > 1000){
       chronoPacketsList.splice(0, 100);
+    }
+
+    if(rxType === "chrono"){
+      addRowToChronoTable(packet);
+    }
+    else if(rxType === "unique"){
+      addRowToUniqueTable(packet);
+    }
+
+    if(isAlwaysDown){
+      var rowpos = $('#rx-table tr:last').position();
+
+      $('html, body').scrollTop(rowpos.top);
     }
   }
 }
@@ -170,9 +260,6 @@ function onFilterSelected(filter){
     setEnabled("#add-channel", false);
     setEnabled("#remove-channel", false);
     setEnabled("#selected-channel-list", false);
-
-    minFilter = $("min-channel-list").val();
-    maxFilter = $("max-channel-list").val();
   }
   else if(currentFilterType === "list"){
     setEnabled("#min-channel-list", false);
@@ -194,7 +281,7 @@ function checkFilter(id){
     }
   }
   else if(currentFilterType === "list"){
-    if(listFilter.indexOf(id) != -1){
+    if(listFilter.indexOf(id.toString()) != -1){
       return true;
     }
   }
@@ -203,5 +290,66 @@ function checkFilter(id){
 
 function applyFilter(){
   $("#rx-table").empty();
+
+  minFilter = $("#min-channel-list").val();
+  maxFilter = $("#max-channel-list").val();
+
+  if(rxType === "chrono"){
+    for(var i = 0; i < chronoPacketsList.length; i++){
+      if(checkFilter(chronoPacketsList[i].id)){
+        addRowToChronoTable(chronoPacketsList[i]);
+      }
+    }
+  }
+  else if(rxType === "unique"){
+    for(var i = 0; i < uniquePacketsList.length; i++){
+      if(checkFilter(uniquePacketsList[i].id)){
+        /*
+        child = "<tr id='" + uniquePacketsList[i].id + "'>";
+        child += "<td>" + uniquePacketsList[i].id + "</td>";
+        child += "<td>" + uniquePacketsList[i].name + "</td>";
+        child += "<td>" + uniquePacketsList[i].size + "</td>";
+        for(var j = 0; j < uniquePacketsList[i].size; j++){
+          child += "<td>" + uniquePacketsList[i].data[j].toString(16) + "</td>";
+        }
+        child += "<td>" + uniquePacketsList[i].value + "</td>";
+        child += "<td>" + uniquePacketsList[i].notes + "</td>";
+        child += "</tr>"
+        */
+      }
+    }
+  }
+}
+
+function addRowToChronoTable(packet){
+  var d;
+  var child = "<tr>";
+  child += "<td>" + packet.id + "</td>";
+  if(packet.id in channels){
+    child += "<td>" + channels[packet.id].name + "</td>";
+  }
+  else{
+    child += "<td>Unknown</td>";
+  }
+  child += "<td>" + packet.size + "</td>";
+  for(var j = 0; j < packet.size; j++){
+    d = packet.data[j].toString(16).toUpperCase();
+    if(d.length < 2){
+      d = '0' + d;
+    }
+    child += "<td>" + d + "</td>";
+  }
+  for(var j = 0; j < 8 - packet.size; j++){
+    child += "<td></td>";
+  }
+  child += "<td>" + packet.value + "</td>";
+  child += "<td>" + packet.notes + "</td>";
+  child += "</tr>"
+
+  $("#rx-table").append(child);
+
+}
+
+function addRowToUniqueTable(packet){
 
 }

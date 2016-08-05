@@ -36,6 +36,10 @@
 
     <!-- W3C cookies functions -->
     <script src="js/cookies.js"></script>
+    <!-- Include custom circular buffer functions utils -->
+    <script src="js/circular_buffer.js"></script>
+    <!-- Include custom binary conversion functions utils -->
+    <script src="js/conversion.js"></script>
     <!-- Include custom bootstrap functions utils -->
     <script src="js/bootstrap_utils.js"></script>
     <!-- Include serial port functions -->
@@ -56,6 +60,12 @@
               }
             }
           );
+
+          <?php
+            while($row = $result->fetch_assoc()){
+              echo 'channels[' . $row['can_id'] . '] = {name: "' . $row['name'] . '", size: ' . $row['size'] . ', type: "' . $row['type'] . '", formula: function(x){return ' . $row['formula'] . ';}};' . PHP_EOL;
+            }
+          ?>
         }
       );
     </script>

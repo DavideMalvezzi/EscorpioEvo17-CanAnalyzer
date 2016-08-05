@@ -47,7 +47,7 @@ function SerialPort(){
   */
   port.onMessage.addListener(
     function(msg) {
-      console.log(msg);
+      //console.log(msg);
       if(msg.header === "guid"){
         portGUID = msg.guid;
       }
