@@ -102,6 +102,7 @@ function parsePackets(){
     //Check if can id and size have been read
     if(buffer.getLength() > PACKET_HEADER.length + 3){
       header += PACKET_HEADER.length;
+
       var id = buffer.getUint16FromStart(header);
       var size = buffer.getByteFromStart(header + 2);
       header += 3;
@@ -132,6 +133,7 @@ function parsePackets(){
 
 function getPacketValue(id, data){
   if(id in channels){
+    var conversionResponse;
     var dv = new DataView(new ArrayBuffer(data.length));
     for(var i = 0; i < data.length; i++){
       dv.setUint8(i, data[i]);
@@ -139,18 +141,28 @@ function getPacketValue(id, data){
 
     switch(channels[id].type){
       case 'B':
-        return parseBitFlag(dv, 0, data.length);
+        conversionResponse = parseBitFlag(dv, 0, data.length);
+        break;
       case 'U':
-        return parseUInt(dv, 0, data.length);
+        conversionResponse = parseUInt(dv, 0, data.length);
+        break;
       case 'I':
-        return parseSInt(dv, 0, data.length);
+        conversionResponse = parseSInt(dv, 0, data.length);
+        break;
       case 'D':
-        return parseDecimal(dv, 0, data.length);
+        conversionResponse = parseDecimal(dv, 0, data.length);
+        break;
       case 'S':
-        return parseString(dv, 0, data.length);
+        conversionResponse = parseString(dv, 0, data.length);
+        break;
+      default:
+        return {value:"", notes:"Unknown channel"};
     }
-  }
 
+    conversionResponse.value = channels[id].formula(conversionResponse.value);
+
+    return conversionResponse;
+  }
   return {value:"", notes:"Unknown channel"};
 }
 
@@ -185,7 +197,7 @@ var chronoPacketsList = [];
 var uniquePacketsList = [];
 
 function addPacket(packet){
-  console.log(packet);
+  //console.log(packet);
 
   if(checkFilter(packet.id)){
 
@@ -194,6 +206,13 @@ function addPacket(packet){
 
     if(chronoPacketsList.length > 1000){
       chronoPacketsList.splice(0, 100);
+    }
+
+    var rxTableRow = document.getElementById("rx-table").rows;
+    if(rxTableRow.length > 700){
+      for(var i = 0; i < 350; i++){
+        rxTableRow[i].parentNode.removeChild(rxTableRow[i]);
+      }
     }
 
     if(rxType === "chrono"){
@@ -205,7 +224,6 @@ function addPacket(packet){
 
     if(isAlwaysDown){
       var rowpos = $('#rx-table tr:last').position();
-
       $('html, body').scrollTop(rowpos.top);
     }
   }
@@ -347,7 +365,6 @@ function addRowToChronoTable(packet){
   child += "</tr>"
 
   $("#rx-table").append(child);
-
 }
 
 function addRowToUniqueTable(packet){

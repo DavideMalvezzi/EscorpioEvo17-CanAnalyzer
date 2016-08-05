@@ -18,7 +18,7 @@ function CircularBuffer(size){
       return -1;
     }
 
-    return bufferDv.getUint16((bufferStart + index) % bufferDv.byteLength);
+    return (this.getByteFromStart(index) << 8) | this.getByteFromStart(index + 1);
   }
 
   this.pushByte = function(value){
