@@ -93,84 +93,84 @@
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: transparent; border:none; top:0px;">
       <div class="container-fluid">
         <div id="menu-header" class="row form-inline">
-            <div class="col-xs-4 col-md-4 col">
-              Serial Port
-            </div>
-
-            <div class="col-xs-3 col-md-2 col">
-              Actions
-            </div>
-
-            <div class="col-xs-3 col-md-2 col">
-              Modes
-            </div>
-
-            <div class="col-xs-2 col-md-1 col">
-              Settings
-            </div>
+          <div class="col-xs-4 col-md-4 col">
+            Serial Port
           </div>
+
+          <div class="col-xs-3 col-md-2 col">
+            Actions
+          </div>
+
+          <div class="col-xs-3 col-md-2 col">
+            Modes
+          </div>
+
+          <div class="col-xs-2 col-md-1 col">
+            Settings
+          </div>
+        </div>
         <div id="menu-items" class="row form-inline">
-            <div class="col-xs-4 col-md-4 col">
-              <select id="port-combo" class="form-control" style="min-width: 150px;">
-              </select>
+          <div class="col-xs-4 col-md-4 col">
+            <select id="port-combo" class="form-control" style="min-width: 150px;">
+            </select>
 
-              <button type="button" id="refresh-btn" class="btn btn-primary" onclick="reloadPort()">
-                <span class="glyphicon glyphicon-refresh"></span>
+            <button type="button" id="refresh-btn" class="btn btn-primary" onclick="reloadPort()">
+              <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+
+            <div class="btn-group">
+              <button type="button" id="open-btn" class="btn btn-primary disabled" onclick="openPort()" disabled>
+                <span class="glyphicon glyphicon-play"></span>
               </button>
 
-              <div class="btn-group">
-                <button type="button" id="open-btn" class="btn btn-primary disabled" onclick="openPort()" disabled>
-                  <span class="glyphicon glyphicon-play"></span>
-                </button>
+              <button type="button" id="pause-btn" class="btn btn-primary" onclick="pause()" disabled>
+                <span class="glyphicon glyphicon-pause"></span>
+              </button>
 
-                <button type="button" id="pause-btn" class="btn btn-primary" onclick="pause()" disabled>
-                  <span class="glyphicon glyphicon-pause"></span>
-                </button>
-
-                <button type="button" id="close-btn" class="btn btn-primary disabled" onclick="closePort()" disabled>
-                  <span class="glyphicon glyphicon-stop"></span>
-                </button>
-              </div>
-            </div>
-
-            <div class="col-xs-3 col-md-2 col">
-              <div class="btn-group">
-                <button type="button" id="down-btn" class="btn btn-primary" onclick="toggleAlwaysDown()">
-                  <span class="glyphicon glyphicon-arrow-down"></span>
-                </button>
-
-                <button type="button" id="filter-btn" class="btn btn-primary" onclick="showFilterModal()">
-                  <span class="glyphicon glyphicon-filter"></span>
-                </button>
-
-                <button type="button" id="remove-btn" class="btn btn-primary" onclick="clearTables()">
-                  <span class="glyphicon glyphicon-remove"></span>
-                </button>
-              </div>
-            </div>
-
-            <div class="col-xs-3 col-md-2 col">
-              <div class="btn-group" role="group" aria-label="Mode">
-                <button type="button" id="rx-chrono-btn" class="btn btn-primary active" onclick="setRxChronoMode()">
-                  <span class="glyphicon glyphicon-time"></span>
-                </button>
-
-                <button type="button" id="rx-unique-btn" class="btn btn-primary" onclick="setRxUniqueMode()">
-                  <span class="glyphicon glyphicon-list-alt"></span>
-                </button>
-
-                <button type="button" id="tx-btn" class="btn btn-primary" onclick="setTxMode()">
-                  <span class="glyphicon glyphicon-send"></span>
-                </button>
-              </div>
-            </div>
-
-            <div class="col-xs-2 col-md-1 col">
-              <button type="button" id="settings-btn" class="btn btn-primary" onclick="showSettingsModal()">
-                <span class="glyphicon glyphicon-cog"></span>
+              <button type="button" id="close-btn" class="btn btn-primary disabled" onclick="closePort()" disabled>
+                <span class="glyphicon glyphicon-stop"></span>
               </button>
             </div>
           </div>
+
+          <div class="col-xs-3 col-md-2 col">
+            <div class="btn-group">
+              <button type="button" id="down-btn" class="btn btn-primary" onclick="toggleAlwaysDown()">
+                <span class="glyphicon glyphicon-arrow-down"></span>
+              </button>
+
+              <button type="button" id="filter-btn" class="btn btn-primary" onclick="showFilterModal()">
+                <span class="glyphicon glyphicon-filter"></span>
+              </button>
+
+              <button type="button" id="remove-btn" class="btn btn-primary" onclick="clearTables()">
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-2 col">
+            <div class="btn-group" role="group" aria-label="Mode">
+              <button type="button" id="rx-chrono-btn" class="btn btn-primary active" onclick="setRxChronoMode()">
+                <span class="glyphicon glyphicon-time"></span>
+              </button>
+
+              <button type="button" id="rx-unique-btn" class="btn btn-primary" onclick="setRxUniqueMode()">
+                <span class="glyphicon glyphicon-list-alt"></span>
+              </button>
+
+              <button type="button" id="tx-btn" class="btn btn-primary" onclick="setTxMode()">
+                <span class="glyphicon glyphicon-send"></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="col-xs-2 col-md-1 col">
+            <button type="button" id="settings-btn" class="btn btn-primary" onclick="showSettingsModal()">
+              <span class="glyphicon glyphicon-cog"></span>
+            </button>
+          </div>
+        </div>
 
         <div id="success-alert" class="alert alert-success hide fade in">
           <span id="success-alert-text"></span>
@@ -188,7 +188,8 @@
 
       <div id="table-container" class="row">
         <div class="col-xs-12">
-          <div class="">
+
+          <div id="rx-table-container" class="table-responsive hide">
             <table class="table table-bordered">
               <thead>
                 <tr>
@@ -205,11 +206,75 @@
                 </tr>
               </thead>
 
-              <tbody id="rx-table">
+              <tbody id="rx-table-body">
 
               </tbody>
             </table>
           </div>
+
+          <div id="tx-table-container" class="row">
+            <div class="col-xs-8 table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>CAN ID</th>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <?php
+                      for($i = 0; $i < 8; $i++){
+                        echo '<th style="max-width: 50px; min-width: 50px;">D' . $i . '</th>';
+                      }
+                    ?>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+
+                <tbody id="rx-table-body">
+                  <?php
+                    for($i = 0; $i < 100; $i++){
+                      echo '<tr>';
+                      for($j = 0; $j < 12; $j++){
+                        echo '<td>ciao</td>';
+                      }
+                      echo '</tr>';
+                    }
+                  ?>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="col-xs-4" id="tx-send-panel">
+              <div class="row">
+                <h2 style="color: white">Send data</h2>
+              </div>
+              <?php
+                for($i = 0; $i < 10; $i++){
+                  echo '<div class="row">';
+                    echo'<div class="col-xs-4 padding-2">';
+                      echo '<select id="min-channel-list" class="form-control">';
+                              $result->data_seek(0);
+                              while($row = $result->fetch_assoc()){
+                                echo'<option value="' . $row["can_id"] . '">' . $row["can_id"] . " " . $row["name"] . "</option>";
+                              }
+
+                      echo '</select>';
+                    echo '</div>';
+
+                    echo '<div class="col-xs-6 padding-2">';
+                      echo '<input type="text" class="form-control" id="">';
+                    echo '</div>';
+
+                    echo '<div class="col-xs-2 padding-2">';
+                      echo '<button type="button" class="btn btn-success">';
+                        echo '<span class="glyphicon glyphicon-send"></span>';
+                      echo '</button>';
+                    echo '</div>';
+                  echo '</div>';
+                }
+              ?>
+            </div>
+          </div>
+
         </div>
       </div>
 

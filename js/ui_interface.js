@@ -13,9 +13,10 @@ var currentFilterType = "none";
 var minFilter, maxFilter;
 var listFilter = [];
 
-var rxType = "chrono";
+var mode = "chrono";
 var chronoPacketsList = [];
 var uniquePacketsList = [];
+var txPacketList = [];
 
 function reloadPort(){
   getDevicesList(
@@ -212,22 +213,22 @@ function addPacket(packet){
       chronoPacketsList.splice(0, 100);
     }
 
-    var rxTableRow = document.getElementById("rx-table").rows;
+    var rxTableRow = document.getElementById("rx-table-body").rows;
     if(rxTableRow.length > 700){
       for(var i = 0; i < 350; i++){
         rxTableRow[i].parentNode.removeChild(rxTableRow[i]);
       }
     }
 
-    if(rxType === "chrono"){
+    if(mode === "chrono"){
       addRowToChronoTable(packet);
     }
-    else if(rxType === "unique"){
+    else if(mode === "unique"){
       addRowToUniqueTable(packet);
     }
 
     if(isAlwaysDown){
-      var rowpos = $('#rx-table tr:last').position();
+      var rowpos = $('#rx-table-body tr:last').position();
       $('html, body').scrollTop(rowpos.top);
     }
   }
@@ -236,7 +237,7 @@ function addPacket(packet){
 function clearTables(){
   chronoPacketsList.splice(0, chronoPacketsList.length);
   uniquePacketsList.splice(0, uniquePacketsList.length);
-  $("#rx-table").empty();
+  $("#rx-table-body").empty();
 }
 
 function showFilterModal(){
@@ -311,19 +312,19 @@ function checkFilter(id){
 }
 
 function applyFilter(){
-  $("#rx-table").empty();
+  $("#rx-table-body").empty();
 
   minFilter = $("#min-channel-list").val();
   maxFilter = $("#max-channel-list").val();
 
-  if(rxType === "chrono"){
+  if(mode === "chrono"){
     for(var i = 0; i < chronoPacketsList.length; i++){
       if(checkFilter(chronoPacketsList[i].id)){
         addRowToChronoTable(chronoPacketsList[i]);
       }
     }
   }
-  else if(rxType === "unique"){
+  else if(mode === "unique"){
     for(var key in uniquePacketsList){
       if(checkFilter(key)){
         addRowToUniqueTable(uniquePacketsList[key]);
@@ -357,7 +358,7 @@ function addRowToChronoTable(packet){
   child += "<td>" + packet.notes + "</td>";
   child += "</tr>"
 
-  $("#rx-table").append(child);
+  $("#rx-table-body").append(child);
 }
 
 function addRowToUniqueTable(packet){
@@ -390,7 +391,7 @@ function addRowToUniqueTable(packet){
   }
   else{
      child = "<tr id='row-" + packet.id +"'>" + child + "<tr>";
-     $("#rx-table").append(child);
+     $("#rx-table-body").append(child);
   }
 
 
@@ -398,23 +399,47 @@ function addRowToUniqueTable(packet){
 }
 
 function setRxChronoMode(){
-  if(rxType !== "chrono"){
+  if(mode !== "chrono"){
     $("#rx-chrono-btn").addClass("active");
     $("#rx-unique-btn").removeClass("active");
     $("#tx-btn").removeClass("active");
 
-    rxType = "chrono";
+    mode = "chrono";
     applyFilter();
+
+    setVisible("#rx-table-container", true);
+    setVisible("#tx-table-container", false);
   }
 }
 
 function setRxUniqueMode(){
-  if(rxType !== "unique"){
+  if(mode !== "unique"){
     $("#rx-chrono-btn").removeClass("active");
     $("#rx-unique-btn").addClass("active");
     $("#tx-btn").removeClass("active");
 
-    rxType = "unique";
+    mode = "unique";
     applyFilter();
+
+    setVisible("#rx-table-container", true);
+    setVisible("#tx-table-container", false);
   }
+}
+
+function setTxMode() {
+  if(mode !== "tx"){
+    $("#rx-chrono-btn").removeClass("active");
+    $("#rx-unique-btn").removeClass("active");
+    $("#tx-btn").addClass("active");
+
+    mode = "tx";
+
+    setVisible("#rx-table-container", false);
+    setVisible("#tx-table-container", true);
+  }
+}
+
+window.onscroll = function(){
+  console.log(window.scrollY);
+  $("#tx-send-panel").css("top", window.scrollY);
 }

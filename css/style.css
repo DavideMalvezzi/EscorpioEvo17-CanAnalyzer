@@ -26,9 +26,8 @@ table tbody tr:hover td{
   background-color: #606060;
 }
 
-.col{
-  margin: 0px;
-  padding: 0px;
+.padding-2 {
+   padding: 2px !important;
 }
 
 #menu-header{
