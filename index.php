@@ -56,13 +56,30 @@
           isExtensionInstalled(
             function(installed){
               if(!installed){
-                showAlert('#error-alert', 'Serial Port Interface extension is missing. <a href="#">Please install it here.</a>');
+                showAlert('#error-alert', 'Serial Port Interface extension is missing. <a href="extension/ChromeSerialPortExtension.crx">Please install it here.</a>');
               }
               else{
                 reloadPort();
               }
             }
           );
+
+          window.onbeforeunload = function(){
+            if(serialPort.isOpen()){
+              serialPort.closePort(
+                function(response){
+                  if(response.result === "ok"){
+                    return null;
+                  }
+                  else{
+                    alert(response.error);
+                    return false;
+                  }
+                }
+              );
+            }
+            return null;
+          }
 
           <?php
             while($row = $result->fetch_assoc()){
@@ -72,8 +89,6 @@
         }
       );
     </script>
-
-
 
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: transparent; border:none; top:0px;">
       <div class="container-fluid">
@@ -152,20 +167,20 @@
               </button>
             </div>
           </div>
+
+        <div id="success-alert" class="alert alert-success hide fade in">
+          <span id="success-alert-text"></span>
+          <a href="#" class="close" aria-label="close" onClick="hideAlert('#succes-alert')">&times;</a>
+        </div>
+
+        <div id="error-alert" class="alert alert-danger hide fade in">
+          <span id="error-alert-text"></span>
+          <a href="#" class="close" aria-label="close" onClick="hideAlert('#error-alert')">&times;</a>
+        </div>
       </div>
     </nav>
 
     <div class="container-fluid">
-      <div id="success-alert" class="alert alert-success hide fade in">
-        <span id="success-alert-text"></span>
-        <a href="#" class="close" aria-label="close" onClick="hideAlert('#succes-alert')">&times;</a>
-      </div>
-
-      <div id="error-alert" class="alert alert-danger hide fade in">
-        <span id="error-alert-text"></span>
-        <a href="#" class="close" aria-label="close" onClick="hideAlert('#error-alert')">&times;</a>
-      </div>
-
       <div id="table-container" class="row">
         <div class="col-xs-12">
           <div class="table-responsive">
