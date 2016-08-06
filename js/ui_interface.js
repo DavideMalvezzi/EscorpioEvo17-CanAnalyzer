@@ -9,6 +9,14 @@ var serialPort = new SerialPort;
 var isPaused = false;
 var isAlwaysDown = false;
 
+var currentFilterType = "none";
+var minFilter, maxFilter;
+var listFilter = [];
+
+var rxType = "chrono";
+var chronoPacketsList = [];
+var uniquePacketsList = [];
+
 function reloadPort(){
   getDevicesList(
      function(response){
@@ -76,6 +84,7 @@ function closePort(){
 
 function pause(){
   isPaused = !isPaused;
+  $("#pause-btn").toggleClass("active");
 }
 
 function toggleAlwaysDown(){
@@ -91,7 +100,7 @@ function onNewSerialData(data){
       buffer.pushByte(dv.getUint8(i));
     }
 
-    while(parsePackets());
+    parsePackets();
   }
 }
 
@@ -161,6 +170,10 @@ function getPacketValue(id, data){
 
     conversionResponse.value = channels[id].formula(conversionResponse.value);
 
+    if(channels[id].type === 'D'){
+      conversionResponse.value = conversionResponse.value.toFixed(6);
+    }
+
     return conversionResponse;
   }
   return {value:"", notes:"Unknown channel"};
@@ -186,15 +199,6 @@ function saveSettings(){
   setCookie("can.port.stopbit", $("#serial-port-stopbit").val());
   setCookie("can.port.paritybit", $("#serial-port-paritybit").val());
 }
-
-var currentFilterType = "none";
-var minFilter;
-var maxFilter;
-var listFilter = [];
-
-var rxType = "chrono";
-var chronoPacketsList = [];
-var uniquePacketsList = [];
 
 function addPacket(packet){
   //console.log(packet);
@@ -320,20 +324,9 @@ function applyFilter(){
     }
   }
   else if(rxType === "unique"){
-    for(var i = 0; i < uniquePacketsList.length; i++){
-      if(checkFilter(uniquePacketsList[i].id)){
-        /*
-        child = "<tr id='" + uniquePacketsList[i].id + "'>";
-        child += "<td>" + uniquePacketsList[i].id + "</td>";
-        child += "<td>" + uniquePacketsList[i].name + "</td>";
-        child += "<td>" + uniquePacketsList[i].size + "</td>";
-        for(var j = 0; j < uniquePacketsList[i].size; j++){
-          child += "<td>" + uniquePacketsList[i].data[j].toString(16) + "</td>";
-        }
-        child += "<td>" + uniquePacketsList[i].value + "</td>";
-        child += "<td>" + uniquePacketsList[i].notes + "</td>";
-        child += "</tr>"
-        */
+    for(var key in uniquePacketsList){
+      if(checkFilter(key)){
+        addRowToUniqueTable(uniquePacketsList[key]);
       }
     }
   }
@@ -368,5 +361,60 @@ function addRowToChronoTable(packet){
 }
 
 function addRowToUniqueTable(packet){
+  var d;
+  var child;
 
+  child = "<td>" + packet.id + "</td>";
+  if(packet.id in channels){
+    child += "<td>" + channels[packet.id].name + "</td>";
+  }
+  else{
+    child += "<td>Unknown</td>";
+  }
+  child += "<td>" + packet.size + "</td>";
+  for(var j = 0; j < packet.size; j++){
+    d = packet.data[j].toString(16).toUpperCase();
+    if(d.length < 2){
+      d = '0' + d;
+    }
+    child += "<td>" + d + "</td>";
+  }
+  for(var j = 0; j < 8 - packet.size; j++){
+    child += "<td></td>";
+  }
+  child += "<td>" + packet.value + "</td>";
+  child += "<td>" + packet.notes + "</td>";
+
+  if($("#row-" + packet.id).length){
+    $("#row-" + packet.id).html(child);
+  }
+  else{
+     child = "<tr id='row-" + packet.id +"'>" + child + "<tr>";
+     $("#rx-table").append(child);
+  }
+
+
+
+}
+
+function setRxChronoMode(){
+  if(rxType !== "chrono"){
+    $("#rx-chrono-btn").addClass("active");
+    $("#rx-unique-btn").removeClass("active");
+    $("#tx-btn").removeClass("active");
+
+    rxType = "chrono";
+    applyFilter();
+  }
+}
+
+function setRxUniqueMode(){
+  if(rxType !== "unique"){
+    $("#rx-chrono-btn").removeClass("active");
+    $("#rx-unique-btn").addClass("active");
+    $("#tx-btn").removeClass("active");
+
+    rxType = "unique";
+    applyFilter();
+  }
 }

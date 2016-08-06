@@ -45,7 +45,7 @@ table tbody tr:hover td{
   text-align: center;
   vertical-align: middle;
   padding: 0px 0px 8px 0px;
-  margin: 0px 0px 8px 0px;
+  margin: 0px 0px 0px 0px;
   border-radius: 0px 0px 10px 10px;
 }
 
@@ -53,6 +53,5 @@ table tbody tr:hover td{
   background-color: #1d1d1d;
   border-radius: 10px;
   margin: 8px 0px 8px 0px;
-  padding: 8px;
-  padding-top: 100px;
+  padding: 10px;
 }

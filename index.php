@@ -101,7 +101,7 @@
               Actions
             </div>
 
-            <div class="col-xs-3 col-md-1 col">
+            <div class="col-xs-3 col-md-2 col">
               Modes
             </div>
 
@@ -149,14 +149,18 @@
               </div>
             </div>
 
-            <div class="col-xs-3 col-md-1 col">
+            <div class="col-xs-3 col-md-2 col">
               <div class="btn-group" role="group" aria-label="Mode">
-                <button type="button" id="rx-btn" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-download"></span>
+                <button type="button" id="rx-chrono-btn" class="btn btn-primary active" onclick="setRxChronoMode()">
+                  <span class="glyphicon glyphicon-time"></span>
                 </button>
 
-                <button type="button" id="tx-btn" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-upload"></span>
+                <button type="button" id="rx-unique-btn" class="btn btn-primary" onclick="setRxUniqueMode()">
+                  <span class="glyphicon glyphicon-list-alt"></span>
+                </button>
+
+                <button type="button" id="tx-btn" class="btn btn-primary" onclick="setTxMode()">
+                  <span class="glyphicon glyphicon-send"></span>
                 </button>
               </div>
             </div>
@@ -180,10 +184,11 @@
       </div>
     </nav>
 
-    <div class="container-fluid">
+    <div class="container-fluid" style="padding-top: 120px;">
+
       <div id="table-container" class="row">
         <div class="col-xs-12">
-          <div class="table-responsive">
+          <div class="">
             <table class="table table-bordered">
               <thead>
                 <tr>
@@ -192,7 +197,7 @@
                   <th>Size</th>
                   <?php
                     for($i = 0; $i < 8; $i++){
-                      echo '<th>D' . $i . '</th>';
+                      echo '<th style="max-width: 50px; min-width: 50px;">D' . $i . '</th>';
                     }
                   ?>
                   <th>Value</th>
