@@ -1,7 +1,8 @@
 
 var channels = [];
 
-var PACKET_HEADER = "CAD";
+var CAD_PACKET_HEADER = "CAD";
+var CAN_PACKET_HEADER = "CAN";
 var BUFFER_SIZE = 4096;
 var buffer;
 
@@ -106,12 +107,12 @@ function onNewSerialData(data){
 }
 
 function parsePackets(){
-  var header = buffer.indexOfString(PACKET_HEADER);
+  var header = buffer.indexOfString(CAD_PACKET_HEADER);
 
   if(header != -1){
     //Check if can id and size have been read
-    if(buffer.getLength() > PACKET_HEADER.length + 3){
-      header += PACKET_HEADER.length;
+    if(buffer.getLength() > CAD_PACKET_HEADER.length + 3){
+      header += CAD_PACKET_HEADER.length;
 
       var id = buffer.getUint16FromStart(header);
       var size = buffer.getByteFromStart(header + 2);
@@ -122,7 +123,7 @@ function parsePackets(){
         return 1;
       }
 
-      if(buffer.getLength() > PACKET_HEADER.length + 3 + size){
+      if(buffer.getLength() > CAD_PACKET_HEADER.length + 3 + size){
         var data = [];
         for(var i = 0; i < size; i++){
           data.push(buffer.getByteFromStart(header + i));
@@ -432,14 +433,93 @@ function setTxMode() {
     $("#rx-unique-btn").removeClass("active");
     $("#tx-btn").addClass("active");
 
-    mode = "tx";
-
     setVisible("#rx-table-container", false);
     setVisible("#tx-table-container", true);
+
+    mode = "tx";
   }
 }
 
+function checkSendData(index, evt){
+  evt = evt || window.event;
+  var charCode = evt.keyCode || evt.which;
+  var charStr = String.fromCharCode(charCode);
+
+  var text = $("#tx-text-" + index).val();
+  var size = channels[$("#tx-combo-" + index).val()].size;
+
+  if(text.length + 1 > size * 2)return false;
+
+  charStr = charStr.replace(/[^0-9a-fA-F]/g, "");
+
+  return charStr.length != 0;
+
+  //$("#tx-text-" + index).val(text);
+
+}
+
+function sendTxData(index){
+  var id = $("#tx-combo-" + index).val();
+  var text = $("#tx-text-" + index).val();
+
+  if(channels[id].size * 2 == text.length){
+    var data = hexToBytes(text);
+    var sendPacket = new DataView(new ArrayBuffer(CAN_PACKET_HEADER.length + 3 + data.byteLength));
+    var index = 0;
+
+    for(var i = 0; i < CAN_PACKET_HEADER.length; i++){
+      sendPacket.setUint8(i, CAN_PACKET_HEADER.charCodeAt(i));
+      index++;
+    }
+
+    sendPacket.setUint16(index, id);
+    index += 2;
+
+    sendPacket.setUint8(index, channels[id].size);
+    index += 1;
+
+    for(var i = 0; i < data.byteLength; i++){
+      sendPacket.setUint8(index + i, data.getUint8(i));
+    }
+
+    txPacketList.push({id: id, size: channels[id].size, data: data});
+    addRowToTxTable({id: id, size: channels[id].size, data: data})
+
+    serialPort.write(sendPacket, function(){});
+  }
+}
+
+function addRowToTxTable(packet){
+  var d;
+  var child = "<tr>";
+  child += "<td>" + packet.id + "</td>";
+  child += "<td>" + channels[packet.id].name + "</td>";
+
+  child += "<td>" + packet.size + "</td>";
+  for(var j = 0; j < packet.size; j++){
+    d = packet.data.getUint8(j).toString(16).toUpperCase();
+    if(d.length < 2){
+      d = '0' + d;
+    }
+    child += "<td>" + d + "</td>";
+  }
+  for(var j = 0; j < 8 - packet.size; j++){
+    child += "<td></td>";
+  }
+
+  $("#tx-table-body").append(child);
+}
+
+function hexToBytes(hex) {
+    var bytes = new DataView(new ArrayBuffer(hex.length / 2));
+    for (var i = 0; i < hex.length / 2; i += 2){
+      bytes.setUint8(i, parseInt(hex.substr(i * 2, 2), 16));
+    }
+    return bytes;
+}
+
 window.onscroll = function(){
-  console.log(window.scrollY);
-  $("#tx-send-panel").css("top", window.scrollY);
+  if(mode === "tx"){
+    $("#tx-send-panel").css("top", window.scrollY);
+  }
 }

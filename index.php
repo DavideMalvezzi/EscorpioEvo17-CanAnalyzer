@@ -225,33 +225,24 @@
                         echo '<th style="max-width: 50px; min-width: 50px;">D' . $i . '</th>';
                       }
                     ?>
-                    <th>Value</th>
                   </tr>
                 </thead>
 
-                <tbody id="rx-table-body">
-                  <?php
-                    for($i = 0; $i < 100; $i++){
-                      echo '<tr>';
-                      for($j = 0; $j < 12; $j++){
-                        echo '<td>ciao</td>';
-                      }
-                      echo '</tr>';
-                    }
-                  ?>
+                <tbody id="tx-table-body">
+
                 </tbody>
               </table>
             </div>
 
             <div class="col-xs-4" id="tx-send-panel">
               <div class="row">
-                <h2 style="color: white">Send data</h2>
+                <h2 style="color: white">Send hex data</h2>
               </div>
               <?php
                 for($i = 0; $i < 10; $i++){
                   echo '<div class="row">';
                     echo'<div class="col-xs-4 padding-2">';
-                      echo '<select id="min-channel-list" class="form-control">';
+                      echo '<select id="tx-combo-' . $i . '" class="form-control" id="tx-channel-combo-' . $i . '">';
                               $result->data_seek(0);
                               while($row = $result->fetch_assoc()){
                                 echo'<option value="' . $row["can_id"] . '">' . $row["can_id"] . " " . $row["name"] . "</option>";
@@ -261,11 +252,11 @@
                     echo '</div>';
 
                     echo '<div class="col-xs-6 padding-2">';
-                      echo '<input type="text" class="form-control" id="">';
+                      echo '<input type="text" class="form-control" id="tx-text-' . $i . '" onkeypress="return checkSendData(' . $i . ')">';
                     echo '</div>';
 
                     echo '<div class="col-xs-2 padding-2">';
-                      echo '<button type="button" class="btn btn-success">';
+                      echo '<button type="button" class="btn btn-success" onclick="sendTxData(' . $i . ')">';
                         echo '<span class="glyphicon glyphicon-send"></span>';
                       echo '</button>';
                     echo '</div>';
