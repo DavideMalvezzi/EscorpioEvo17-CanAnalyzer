@@ -53,6 +53,7 @@
     <script>
       $(
         function(){
+
           isExtensionInstalled(
             function(installed){
               if(!installed){
@@ -189,7 +190,7 @@
       <div id="table-container" class="row">
         <div class="col-xs-12">
 
-          <div id="rx-table-container" class="table-responsive hide">
+          <div id="rx-table-container" class="table-responsive">
             <table class="table table-bordered">
               <thead>
                 <tr>
@@ -212,7 +213,7 @@
             </table>
           </div>
 
-          <div id="tx-table-container" class="row">
+          <div id="tx-table-container" class="row hide">
             <div class="col-xs-8 table-responsive">
               <table class="table table-bordered">
                 <thead>
@@ -256,7 +257,7 @@
                     echo '</div>';
 
                     echo '<div class="col-xs-2 padding-2">';
-                      echo '<button type="button" class="btn btn-success" onclick="sendTxData(' . $i . ')">';
+                      echo '<button type="button" id="tx-btn-' . $i . '" class="btn btn-success disabled" onclick="sendTxData(' . $i . ')">';
                         echo '<span class="glyphicon glyphicon-send"></span>';
                       echo '</button>';
                     echo '</div>';

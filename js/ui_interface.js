@@ -19,6 +19,8 @@ var chronoPacketsList = [];
 var uniquePacketsList = [];
 var txPacketList = [];
 
+//Serial port functions
+
 function reloadPort(){
   getDevicesList(
      function(response){
@@ -60,6 +62,11 @@ function openPort(){
         setEnabled("#open-btn", false);
         setEnabled("#pause-btn", true);
         setEnabled("#close-btn", true);
+
+        for(var i = 0; i < 10; i++){
+          setEnabled("#tx-btn-" + i, true);
+        }
+
         serialPort.setOnDataReceivedCallback(onNewSerialData);
       }
       else{
@@ -76,6 +83,11 @@ function closePort(){
         setEnabled("#open-btn", true);
         setEnabled("#pause-btn", false);
         setEnabled("#close-btn", false);
+
+        for(var i = 0; i < 10; i++){
+          setEnabled("#tx-btn-" + i, false);
+        }
+
       }
       else{
         showAlert("#error-alert", response.error);
@@ -93,6 +105,8 @@ function toggleAlwaysDown(){
   isAlwaysDown = !isAlwaysDown;
   $("#down-btn").toggleClass("active");
 }
+
+//Packet parsing functions
 
 function onNewSerialData(data){
   if(!isPaused){
@@ -181,27 +195,6 @@ function getPacketValue(id, data){
   return {value:"", notes:"Unknown channel"};
 }
 
-function showSettingsModal(){
-  var bitrate = checkCookie("can.port.bitrate") ? getCookie("can.port.bitrate") : "9600";
-  var databits = checkCookie("can.port.databits") ? getCookie("can.port.databits") : "eight";
-  var stopbit = checkCookie("can.port.stopbit") ? getCookie("can.port.stopbit") : "one";
-  var paritybit = checkCookie("can.port.paritybit") ? getCookie("can.port.paritybit") : "no";
-
-  $("#serial-port-bitrate").val(bitrate);
-  $("#serial-port-databits").val(databits);
-  $("#serial-port-stopbit").val(stopbit);
-  $("#serial-port-paritybit").val(paritybit);
-
-  $('#settings-modal').modal();
-}
-
-function saveSettings(){
-  setCookie("can.port.bitrate", $("#serial-port-bitrate").val());
-  setCookie("can.port.databits", $("#serial-port-databits").val());
-  setCookie("can.port.stopbit", $("#serial-port-stopbit").val());
-  setCookie("can.port.paritybit", $("#serial-port-paritybit").val());
-}
-
 function addPacket(packet){
   //console.log(packet);
 
@@ -239,8 +232,32 @@ function clearTables(){
   chronoPacketsList.splice(0, chronoPacketsList.length);
   uniquePacketsList.splice(0, uniquePacketsList.length);
   $("#rx-table-body").empty();
+  $("#tx-table-body").empty();
 }
 
+//Settings functions
+function showSettingsModal(){
+  var bitrate = checkCookie("can.port.bitrate") ? getCookie("can.port.bitrate") : "9600";
+  var databits = checkCookie("can.port.databits") ? getCookie("can.port.databits") : "eight";
+  var stopbit = checkCookie("can.port.stopbit") ? getCookie("can.port.stopbit") : "one";
+  var paritybit = checkCookie("can.port.paritybit") ? getCookie("can.port.paritybit") : "no";
+
+  $("#serial-port-bitrate").val(bitrate);
+  $("#serial-port-databits").val(databits);
+  $("#serial-port-stopbit").val(stopbit);
+  $("#serial-port-paritybit").val(paritybit);
+
+  $('#settings-modal').modal();
+}
+
+function saveSettings(){
+  setCookie("can.port.bitrate", $("#serial-port-bitrate").val());
+  setCookie("can.port.databits", $("#serial-port-databits").val());
+  setCookie("can.port.stopbit", $("#serial-port-stopbit").val());
+  setCookie("can.port.paritybit", $("#serial-port-paritybit").val());
+}
+
+//Filter functions
 function showFilterModal(){
   $("#filter-" + currentFilterType).attr("checked", true);
   onFilterSelected(currentFilterType);
@@ -333,6 +350,8 @@ function applyFilter(){
     }
   }
 }
+
+//Rx functions
 
 function addRowToChronoTable(packet){
   var d;
@@ -427,11 +446,15 @@ function setRxUniqueMode(){
   }
 }
 
+//Tx functions
+
 function setTxMode() {
   if(mode !== "tx"){
     $("#rx-chrono-btn").removeClass("active");
     $("#rx-unique-btn").removeClass("active");
     $("#tx-btn").addClass("active");
+
+    loadTxSendData();
 
     setVisible("#rx-table-container", false);
     setVisible("#tx-table-container", true);
@@ -458,9 +481,9 @@ function checkSendData(index, evt){
 
 }
 
-function sendTxData(index){
-  var id = $("#tx-combo-" + index).val();
-  var text = $("#tx-text-" + index).val();
+function sendTxData(inputIndex){
+  var id = $("#tx-combo-" + inputIndex).val();
+  var text = $("#tx-text-" + inputIndex).val();
 
   if(channels[id].size * 2 == text.length){
     var data = hexToBytes(text);
@@ -483,9 +506,10 @@ function sendTxData(index){
     }
 
     txPacketList.push({id: id, size: channels[id].size, data: data});
-    addRowToTxTable({id: id, size: channels[id].size, data: data})
+    addRowToTxTable({id: id, size: channels[id].size, data: data});
+    saveTxSendData(inputIndex);
 
-    serialPort.write(sendPacket, function(){});
+    serialPort.write(sendPacket.buffer, function(){});
   }
 }
 
@@ -512,10 +536,33 @@ function addRowToTxTable(packet){
 
 function hexToBytes(hex) {
     var bytes = new DataView(new ArrayBuffer(hex.length / 2));
-    for (var i = 0; i < hex.length / 2; i += 2){
+    for (var i = 0; i < hex.length / 2; i++){
       bytes.setUint8(i, parseInt(hex.substr(i * 2, 2), 16));
     }
     return bytes;
+}
+
+function loadTxSendData(){
+  for(var i = 0; i < 10; i++){
+    if(checkCookie("can.tx.combo" + i)){
+      $("#tx-combo-" + i).val(getCookie("can.tx.combo" + i));
+    }
+    if(checkCookie("can.tx.text" + i)){
+      $("#tx-text-" + i).val(getCookie("can.tx.text" + i));
+    }
+  }
+}
+
+function saveTxSendData(index){
+  console.log(index);
+  console.log($("#tx-combo-" + index).val());
+  console.log($("#tx-text-" + index).val());
+
+  setCookie("can.tx.combo" + index, $("#tx-combo-" + index).val());
+  setCookie("can.tx.text" + index, $("#tx-text-" + index).val());
+  console.log(getCookie("can.tx.text" + index));
+  console.log(getCookie("can.tx.combo" + index));
+
 }
 
 window.onscroll = function(){
