@@ -40,6 +40,11 @@ function SerialPort(){
   var onDataReceivedCallback = undefined;
 
   /**
+  * Callback function to call if there is the connection encountered some problems.
+  */
+  var onErrorReceivedCallback = undefined;
+
+  /**
   * Listener to handle incoming message from the app trought the messaging port.
   * Handled commands are:
   * - guid -> received when the connection with the app is established, represent the GUID assigned to the port
@@ -47,7 +52,7 @@ function SerialPort(){
   */
   port.onMessage.addListener(
     function(msg) {
-      //console.log(msg);
+      console.log(msg);
       if(msg.header === "guid"){
         portGUID = msg.guid;
       }
@@ -55,6 +60,9 @@ function SerialPort(){
         if(onDataReceivedCallback !== undefined){
           onDataReceivedCallback(new Uint8Array(msg.data).buffer);
         }
+      }
+      else if(msg.header === "serialerror"){
+        onErrorReceivedCallback(msg.error);
       }
     }
   );
